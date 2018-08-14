@@ -1,0 +1,4 @@
+*.log
+.env
+config.production.json
+.DS_Store
