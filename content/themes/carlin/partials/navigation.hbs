@@ -1,0 +1,14 @@
+
+<section class="hero is-custom is-medium">
+
+  <nav class="navbar is-marginless">
+    {{#foreach navigation}}
+      <p class="navbar-item has-text-centered nav-{{slug}}{{#if current}} nav-current{{/if}}">
+        <a class="link" href="{{url absolute="true"}}">{{label}}</a>
+      </p>
+    {{/foreach}}
+  </nav>
+
+  {{> hero}}
+
+</section>

@@ -1,0 +1,79 @@
+section.is-slanted:before {
+  -moz-transform: skewY(-1deg);
+  -ms-transform: skewY(-1deg);
+  -webkit-transform: skewY(-1deg);
+  transform: skewY(-1deg);
+  height: 60px;
+  width: 100%;
+  content: "";
+  top: -25px;
+  left: 0;
+  background: #ffffff;
+  position: absolute;
+}
+
+
+@mixin hero($top_colour, $bottom_colour, $top_opacity, $bottom_opacity) {
+
+  background:
+    linear-gradient( 
+      transparentize($top_colour, $top_opacity),
+      transparentize($bottom_colour, $bottom_opacity)
+    ),
+    no-repeat center right fixed url($nth);
+
+  -webkit-background-size: 100%;
+  -moz-background-size: 100%;
+  -o-background-size: 100%;
+  background-size: 100%;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='$nth', sizingMethod='scale')";
+  filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='$nth', sizingMethod='scale');
+  margin-bottom: 0px;
+  padding: 0px;
+}
+
+section.hero.is-custom {
+  @include hero($green_meadow, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+body.home-template section.hero.is-custom {
+  @include hero($green_meadow, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+body.post-template section.hero.is-custom,
+body.tag-template section.hero.is-custom {
+  @include hero($yellow_gold, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+body.page-template-about section.hero.is-custom {
+  @include hero($turquoise, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+body.page-template-cv-and-skills section.hero.is-custom {
+  @include hero($red_intense, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+body.page-template-blog section.hero.is-custom {
+  @include hero($yellow_saffron, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+body.page-template-contact section.hero.is-custom {
+  @include hero($grey_mint, $purple_wisteria, $opacity_top, $opacity_bottom);
+}
+
+
+section.hero.is-custom .container {
+  padding: 80px;
+  margin: 50px auto;
+  transform: translateY(-4%);
+  background-color: transparentize($default, $half_opacity);
+}
+
+section.hero.is-custom .container a:hover {
+  text-decoration: none;
+  border-bottom: none;
+}

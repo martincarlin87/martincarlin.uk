@@ -1,0 +1,78 @@
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+a, a:hover {
+  color: $green_meadow !important;
+  transition: all 500ms ease-out;
+}
+
+a:hover {
+  color: $purple_wisteria !important;
+}
+
+hr {
+  border-top-color: $grey !important;
+  margin: 50px auto;
+  width: 50%;
+}
+
+p {
+  margin: 10px 0;
+  font-size: 1.2rem;
+}
+
+.dark {
+  color: $dark;
+}
+
+.bg-dark {
+  background: $dark;
+}
+
+.grey-mint {
+  color: $grey_mint;
+}
+
+.grey-gallery {
+  color: $grey_gallery !important;
+}
+
+.grey-cascade {
+  color: $grey_cascade !important;
+}
+
+.purple-plum {
+  color: $purple_plum !important;
+}
+
+.is-bold {
+  font-weight: bold;
+}
+
+.is-inline-block {
+  display: inline-block;
+}
+
+.is-relative {
+  position: relative;
+}
+
+.is-hidden {
+  display: none;
+}
+
+.is-error,
+.is-error label {
+  color: $red_pink !important;
+}
+
+.is-error input, 
+.is-error textarea {
+  border-color: $red_pink !important;
+}
+
+button.button > i {
+  margin-right: 5px;
+}
+

@@ -1,0 +1,37 @@
+nav {
+  background-color: transparentize($grey_mint, 0.5) !important;
+
+  /* Bulma framework only has these styles for viewports > 768px */
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+nav p {
+  /* Bulma framework only has these styles for viewports > 768px */
+  flex: 1;
+
+  -webkit-transition: all 0.1s linear;
+          transition: all 0.1s linear;
+}
+
+.navbar a {
+  font-size: 1.3rem;
+  color: transparentize($grey, 0.2) !important;
+}
+
+.navbar a:hover,
+.nav-current > a {
+  color: $white !important;
+}
+
+nav > p:hover {
+  -webkit-transform: rotate(-2deg) scale(1.05);
+     -moz-transform: rotate(-2deg) scale(1.05);
+      -ms-transform: rotate(-2deg) scale(1.05);
+       -o-transform: rotate(-2deg) scale(1.05);
+          transform: rotate(-2deg) scale(1.05);
+
+  -webkit-transition: all 0.1s linear;
+          transition: all 0.1s linear;
+}

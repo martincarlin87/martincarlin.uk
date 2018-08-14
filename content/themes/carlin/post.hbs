@@ -1,0 +1,48 @@
+{{!< default}}
+
+{{#post}}
+  <article class="{{post_class}}">
+    <section class="section is-relative">
+      <div class="container">
+        <div class="columns">
+          <div class="column has-text-centered">
+            <h1 class="title is-underlined is-relative is-inline-block dark"><strong>{{title}}</strong></h1>
+            <div class="columns">
+              <div class="column">
+                <time class="post-date" datetime="{{date format='YYYY-MM-DD'}}">
+                  Posted on {{date format="DD MMMM YYYY"}}
+                </time>
+                {{tags prefix=" in "}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            {{content}}
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column">
+            <div id="disqus_thread"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <script type="text/javascript">
+      var disqus_shortname = 'martincarlinuk'; // required: replace example with your forum shortname
+      var disqus_identifier = '{{post.id}}';
+   
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a> 
+
+{{/post}}

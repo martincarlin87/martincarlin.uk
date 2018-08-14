@@ -1,0 +1,17 @@
+.title.is-underlined {
+  padding: 0 0 15px 0;
+  text-transform: uppercase;
+
+  &:after {
+    position: absolute;
+    content: '';
+    height: 4px;
+    background-color: $dark;
+    width: 50%;
+    margin: 0 auto;
+    clear: both;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}

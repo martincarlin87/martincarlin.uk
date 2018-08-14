@@ -1,0 +1,16 @@
+{
+    "name": "carlin",
+    "description": "A theme for my personal website",
+    "version": "2.0.0",
+    "engines": {
+        "ghost": ">=1.0.0"
+    },
+    "license": "MIT",
+    "author": {
+        "email": "martin@martincarlin.uk"
+    },
+    "config": {
+        "posts_per_page": 10
+    }
+}
+

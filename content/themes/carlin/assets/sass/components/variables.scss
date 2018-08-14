@@ -1,0 +1,94 @@
+
+/* COLOURS */
+
+$white: #ffffff;
+
+$default: #E1E5EC;
+
+$dark: #2F353B;
+
+$blue: #3598DC;
+$blue_madison: #578EBE;
+$blue_chambray: #2C3E50;
+$blue_ebonyclay: #22313F;
+$blue_hoki: #67809F;
+$blue_steel: #4B77BE;
+$blue_soft: #4C87B9;
+$blue_dark: #5E738B;
+$blue_sharp: #5C9BD1;
+$turquoise: #32C5D2;
+
+$green_meadow: #1BBC9B;
+$green_seagreen: #1BA39C;
+$green_turquoise: #36D7B7;
+$green_haze: #44B6AE;
+$green_jungle: #26C281;
+$green_soft: #3FABA4;
+$green_dark: #4DB3A2;
+$green_sharp: #2AB4C0;
+
+$grey: #e5e5e5;
+$grey_steel: #E9EDEF;
+$grey_cararra: #FAFAFA;
+$grey_gallery: #555555;
+$grey_cascade: #95a5a6;
+$grey_silver: #BFBFBF;
+$grey_salsa: #ACB5C3;
+$grey_salt: #BFCAD1;
+$grey_mint: #525E64;
+
+
+$red: #E7505A;
+$red_pink: #E08283;
+$red_sunglo: #E26A6A;
+$red_intense: #E35B5A;
+$red_thunderbird: #D91E18;
+$red_flamingo: #EF4836;
+$red_soft: #D05454;
+$red_haze: #F36A5A;
+$red_mint: #E43A45;
+
+$yellow: #C49F47;
+$yellow_gold: #E87E04;
+$yellow_casablanca: #F2784B;
+$yellow_crusta: #F3C200;
+$yellow_lemon: #F7CA18;
+$yellow_saffron: #F4D03F;
+$yellow_soft: #C8D046;
+$yellow_haze: #C5BF66;
+$yellow_mint: #C5B96B;
+
+$purple: #8E44AD;
+$purple_plum: #8775A7;
+$purple_medium: #BF55EC;
+$purple_studio: #8E44AD;
+$purple_wisteria: #9B59B6;
+$purple_seance: #9A12B3;
+$purple_intense: #8775A7;
+$purple_sharp: #796799;
+$purple_soft: #8877A9;
+
+/* OPACITY */
+
+$opacity_top: 0.25;
+$opacity_bottom: 0.05;
+
+$half_opacity: 0.5;
+
+/* IMAGES */
+
+$action: '/assets/images/action.jpg';
+$avengers: '/assets/images/avengers.jpg';
+$everything: '/assets/images/everything.jpg';
+$galactus: '/assets/images/galactus.jpg';
+$gotg: '/assets/images/gotg.jpg';
+$grid: '/assets/images/grid.jpg';
+$negative_space: '/assets/images/negative_space.jpg';
+$retro: '/assets/images/retro.jpg';
+$silhouettes: '/assets/images/silhouettes.jpg';
+$spidey: '/assets/images/spidey.jpg';
+
+$images: $action, $avengers, $everything, $galactus, $gotg, $grid, $negative_space, $retro, $silhouettes, $spidey;
+
+$i: random(length($images));
+$nth: nth($images, $i);

@@ -1,0 +1,14 @@
+
+.title.is-underlined.post-title {
+  color: $purple_plum;
+
+  &:after {
+    background-color: $purple_plum;
+  }
+}
+
+.post-meta {
+  margin-top: 20px;
+  color: $grey_cascade;
+  font-size: 0.8rem;
+} 

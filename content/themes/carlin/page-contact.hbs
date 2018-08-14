@@ -1,0 +1,55 @@
+
+{{!< default}}
+
+{{#get "posts" slug="contact" include="author,tags"}}
+  {{#foreach posts}}
+
+    <section class="section is-slanted is-relative">
+      <div class="container">
+        <div class="columns">
+          <div class="column has-text-centered">
+            <h1 class="title is-underlined is-relative is-inline-block dark"><strong>{{title}}</strong></h1>
+          </div>
+        </div>
+        <div class="columns">
+          <div class="column is-6">
+            {{content}}
+          </div>
+          <div class="column is-6">
+            <form class="contact">
+              <input type="hidden" name="_subject" value="New message from martincarlin.uk" />
+              <input type="text" name="_gotcha" style="display:none" />
+              <div class="columns">
+                <div class="column">
+                  <p class="control">
+                    <label><strong>Name</strong></label>
+                    <input class="input required" type="text" placeholder="Name" name="name">
+                  </p>
+                  <p class="control">
+                    <label><strong>Email</strong></label>
+                    <input class="input required" type="email" placeholder="Email Address" name="email">
+                  </p>
+                  <p class="control">
+                    <label><strong>Message</strong></label>
+                    <textarea class="textarea required" placeholder="Message" name="message"></textarea>
+                  </p>
+                  <p class="control">
+                    <button class="button is-primary"><i class="fa fa-envelope"></i> Send</button>
+                  </p>
+                </div>
+              </div>
+            </form>
+            <div class="columns">
+              <div class="column">
+                <div class="notification is-primary is-hidden">
+                  <button class="delete"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  {{/foreach}}
+{{/get}}

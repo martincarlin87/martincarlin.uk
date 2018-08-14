@@ -1,0 +1,23 @@
+
+footer.bg-dark .content a {
+  text-decoration: none;
+  border-bottom: none;
+}
+
+footer.bg-dark .content a:hover {
+  color: $purple_plum !important;
+}
+
+footer.is-slanted:before {
+  -moz-transform: skewY(1deg);
+  -ms-transform: skewY(1deg);
+  -webkit-transform: skewY(1deg);
+  transform: skewY(-deg);
+  height: 40px;
+  width: 100%;
+  content: "";
+  top: -25px;
+  left: 0;
+  background: $white;
+  position: absolute;
+}

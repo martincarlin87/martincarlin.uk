@@ -1,0 +1,27 @@
+
+{{!< default}}
+
+{{#get "posts" slug="cv-and-skills" include="author,tags"}}
+  {{#foreach posts}}
+
+    <section class="section is-slanted is-relative">
+      <div class="container">
+        <div class="columns">
+          <div class="column has-text-centered">
+            <h1 class="title is-underlined is-relative is-inline-block dark"><strong>{{title}}</strong></h1>
+          </div>
+        </div>
+
+        {{> skills}}
+
+        <div class="columns">
+          <div class="column">
+            {{content}}
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  {{/foreach}}
+{{/get}}
