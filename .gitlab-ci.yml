@@ -12,6 +12,6 @@ stages:
 deploy:
   stage: deploy
   script:
-    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN
+    - docker login -u martin@martincarlin.uk -p $CI_BUILD_TOKEN
     - docker push registry.gitlab.com/martincarlin87/martincarlin.uk
     - docker-compose up --force-recreate
