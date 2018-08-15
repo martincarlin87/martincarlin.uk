@@ -13,5 +13,7 @@ deploy:
   stage: deploy
   script:
     - docker login registry.gitlab.com -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD
-    - docker push registry.gitlab.com/martincarlin87/martincarlin.uk
     - docker-compose up --force-recreate
+    - docker tag ghost registry.gitlab.com/martincarlin87/ghost
+    - docker tag mariadb:10.3 registry.gitlab.com/martincarlin87/mariadb
+    - docker push registry.gitlab.com/martincarlin87/martincarlin.uk
