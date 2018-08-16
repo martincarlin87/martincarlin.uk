@@ -17,8 +17,6 @@ services:
       - ./data/martincarlin.sql:/docker-entrypoint-initdb.d/martincarlin.sql
     networks:
       - web-network
-    env_file:
-      - .env.local
 
   ghost:
     container_name: ghost
