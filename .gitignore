@@ -2,3 +2,4 @@
 .env
 config.production.json
 .DS_Store
+content/logs
