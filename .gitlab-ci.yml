@@ -15,7 +15,7 @@ deploy:
     - apk add --no-cache py-pip
     - pip install docker-compose
   script:
-    - docker login registry.gitlab.com -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD registry.gitlab.com
     - docker-compose up --force-recreate
     - docker-compose down
     - docker tag ghost registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
