@@ -16,9 +16,10 @@ deploy:
     - pip install docker-compose
   script:
     - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD registry.gitlab.com
-    - docker tag ghost registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
+    - docker tag ghost:latest registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
     - docker tag mariadb:10.3 registry.gitlab.com/martincarlin87/martincarlin.uk/mariadb:latest
-    - docker push registry.gitlab.com/martincarlin87/martincarlin.uk
+    - docker push registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
+    - docker push registry.gitlab.com/martincarlin87/martincarlin.uk/mariadb:latest
     - ssh martin@$CI_DEPLOY_IP
     - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD registry.gitlab.com
     - docker stop registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
