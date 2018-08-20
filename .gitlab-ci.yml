@@ -22,7 +22,7 @@ deploy:
     - ssh martin@$CI_DEPLOY_IP
     - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD registry.gitlab.com
     - docker stop registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
-    - docker stop mariadb:10.3 registry.gitlab.com/martincarlin87/martincarlin.uk/mariadb:latest
+    - docker stop registry.gitlab.com/martincarlin87/martincarlin.uk/mariadb:latest
     - docker rm registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
     - docker rm registry.gitlab.com/martincarlin87/martincarlin.uk/mariadb:latest
     - docker pull registry.gitlab.com/martincarlin87/martincarlin.uk/ghost:latest
