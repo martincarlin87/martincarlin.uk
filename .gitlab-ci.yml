@@ -1,25 +1,25 @@
-image: centos:7
+# image: centos:7
 
-stages:
-    - deploy
+# stages:
+#     - deploy
 
-before_script:
-    - yum install which -y
-    # install ssh-agent if not already installed, it is required by docker
-    - 'which ssh-agent || ( yum install openssh-clients -y )'
-    # run ssh-agent (inside the build environment)
-    - eval $(ssh-agent -s)
-    # add the ssh key stored in SSH_PRIVATE_KEY variable to the agent store
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    # for docker builds disable host key checking although this can lead to
-    # mitm attacks; only use this in docker or it will overwrite the host
-    # ssh config!
-    - mkdir -p ~/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+# before_script:
+#     - yum install which -y
+#     # install ssh-agent if not already installed, it is required by docker
+#     - 'which ssh-agent || ( yum install openssh-clients -y )'
+#     # run ssh-agent (inside the build environment)
+#     - eval $(ssh-agent -s)
+#     # add the ssh key stored in SSH_PRIVATE_KEY variable to the agent store
+#     - ssh-add <(echo "$SSH_PRIVATE_KEY")
+#     # for docker builds disable host key checking although this can lead to
+#     # mitm attacks; only use this in docker or it will overwrite the host
+#     # ssh config!
+#     - mkdir -p ~/.ssh
+#     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
-production:
-    stage: deploy
-    script:
-        - ssh -t martin@CI_DEPLOY_IP "cd /srv/www/martincarlin.uk && git pull && docker-compose up -d --force-recreate"
-    only:
-        - master
+# production:
+#     stage: deploy
+#     script:
+#         - ssh -t martin@CI_DEPLOY_IP "cd /srv/www/martincarlin.uk && git pull && docker-compose up -d --force-recreate"
+#     only:
+#         - master
