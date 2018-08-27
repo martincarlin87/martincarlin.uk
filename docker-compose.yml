@@ -39,6 +39,7 @@ services:
       NODE_ENV: production
       LOGGING_LEVEL: error
       VIRTUAL_HOST: docker.martincarlin.uk
+      VIRTUAL_PORT: 2368
     command: ["node", "current/index.js"]
     networks:
       - web-network
