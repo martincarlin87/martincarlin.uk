@@ -14,8 +14,8 @@ before_script:
     # for docker builds disable host key checking although this can lead to
     # mitm attacks; only use this in docker or it will overwrite the host
     # ssh config!
-    - mkdir -p ~/home/martin/.ssh
-    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/home/martin/.ssh/config'
+    - mkdir -p /home/martin/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > /home/martin/.ssh/config'
 
 production:
     stage: deploy
