@@ -25,6 +25,8 @@ services:
       - mysql
     ports:
       - ${HOST_PORT}:2368
+    expose:
+      - ${HOST_PORT}
     volumes:
       - ./content:/var/lib/ghost/content
       - ./config.production.json:/var/lib/ghost/config.production.json
