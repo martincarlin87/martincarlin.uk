@@ -38,6 +38,7 @@ services:
       url: ${URL}
       NODE_ENV: production
       LOGGING_LEVEL: error
+      VIRTUAL_HOST=docker.martincarlin.uk
     command: ["node", "current/index.js"]
     networks:
       - web-network
