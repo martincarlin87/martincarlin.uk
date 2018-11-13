@@ -20,6 +20,6 @@ before_script:
 production:
     stage: deploy
     script:
-        - ssh -t martin@$CI_DEPLOY_IP "mkdir -p /srv/www/martincarlin.uk && cd /srv/www/martincarlin.uk && git pull && docker-compose up -d --force-recreate"
+        - ssh -t martin@$CI_DEPLOY_IP "mkdir -p /srv/www/martincarlin.uk && cd /srv/www/martincarlin.uk && git init && git pull && docker-compose up -d --force-recreate"
     only:
         - master
