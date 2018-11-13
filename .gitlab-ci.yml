@@ -26,6 +26,6 @@ production:
         - ssh -t martin@$CI_DEPLOY_IP
         - mkdir -p /srv/www/martincarlin.uk
         - scp -P22 -r ./ martin@$CI_DEPLOY_IP:/srv/www/martincarlin.uk
-        - ssh martin@$CI_DEPLOY_IP:/srv/www/martincarlin.uk && "cd /srv/www/martincarlin.uk && docker-compose up -d --force-recreate"
+        - ssh martin@$CI_DEPLOY_IP "cd /srv/www/martincarlin.uk && docker-compose up -d --force-recreate"
     only:
         - master
