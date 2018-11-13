@@ -19,6 +19,9 @@ before_script:
 
 production:
     stage: deploy
+    artifacts:
+      paths:
+        - build/
     script:
         - ssh -t martin@$CI_DEPLOY_IP
         - mkdir -p /srv/www/martincarlin.uk
