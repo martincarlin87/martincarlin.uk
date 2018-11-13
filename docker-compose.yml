@@ -7,7 +7,7 @@ services:
     image: mariadb:10.3
     restart: always
     ports:
-      - 3306:3306
+      - 127.0.0.1:3307:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -15,18 +15,14 @@ services:
     volumes:
       - ./data/martincarlin.sql:/docker-entrypoint-initdb.d/martincarlin.sql
     networks:
-      - web-network
+      - default
 
   ghost:
     container_name: ghost
-    image: ghost
+    image: ghost:1.25.5
     restart: always
     depends_on:
       - mysql
-    ports:
-      - ${HOST_PORT}:2368
-    expose:
-      - ${HOST_PORT}
     volumes:
       - ./content:/var/lib/ghost/content
       - ./config.production.json:/var/lib/ghost/config.production.json
@@ -40,12 +36,13 @@ services:
       url: ${URL}
       NODE_ENV: production
       LOGGING_LEVEL: error
-      VIRTUAL_HOST: docker.martincarlin.uk
-      VIRTUAL_PORT: 2368
     command: ["node", "current/index.js"]
     networks:
-      - web-network
+      - default
+      - nginx-proxy
+
 
 networks:
-  web-network:
-    driver: bridge
+  nginx-proxy:
+    external:
+      name: nginx-proxy
