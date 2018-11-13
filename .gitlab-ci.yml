@@ -16,6 +16,7 @@ before_script:
     # ssh config!
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - yum install rsync -y
 
 production:
     stage: deploy
