@@ -37,12 +37,3 @@ services:
       NODE_ENV: production
       LOGGING_LEVEL: error
     command: ["node", "current/index.js"]
-    networks:
-      - default
-      - nginx-proxy
-
-
-networks:
-  nginx-proxy:
-    external:
-      name: nginx-proxy
