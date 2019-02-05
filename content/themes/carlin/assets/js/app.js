@@ -42,8 +42,6 @@ var App = function () {
                                             '<i class="fa fa-warning"></i> Please fill out the required fields' +
                                           '</div>');
             }
-
-            return false;
         });
     }
 
