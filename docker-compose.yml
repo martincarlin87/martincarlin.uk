@@ -21,6 +21,8 @@ services:
     container_name: ghost
     image: ghost:1.25.5
     restart: always
+    ports:
+      - 2368:8160
     depends_on:
       - mysql
     volumes:
