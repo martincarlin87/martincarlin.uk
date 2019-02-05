@@ -37,7 +37,6 @@ var App = function () {
                                           '</div>');
 
             } else {
-                console.log('Invalid');
                 $('div.notification').replaceWith('<div class="notification is-danger">' +
                                             '<button class="delete"></button>' +
                                             '<i class="fa fa-warning"></i> Please fill out the required fields' +
