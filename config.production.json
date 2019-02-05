@@ -1,7 +1,7 @@
 {
-  "url": "http://docker.martincarlin.uk",
+  "url": "http://martincarlin.uk",
   "server": {
-    "port": 2368,
+    "port": 8160,
     "host": "0.0.0.0"
   },
   "database": {
