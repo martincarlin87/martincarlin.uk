@@ -19,7 +19,7 @@ services:
 
   ghost:
     container_name: ghost
-    image: ghost:1.25.5
+    image: ghost:latest
     restart: always
     ports:
       - 8160:2368
