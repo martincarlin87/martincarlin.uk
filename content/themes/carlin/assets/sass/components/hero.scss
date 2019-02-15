@@ -49,19 +49,19 @@ body.tag-template section.hero.is-custom {
   @include hero($yellow_gold, $purple_wisteria, $opacity_top, $opacity_bottom);
 }
 
-body.page-template-about section.hero.is-custom {
+body.page-about section.hero.is-custom {
   @include hero($turquoise, $purple_wisteria, $opacity_top, $opacity_bottom);
 }
 
-body.page-template-cv-and-skills section.hero.is-custom {
+body.page-cv-and-skills section.hero.is-custom {
   @include hero($red_intense, $purple_wisteria, $opacity_top, $opacity_bottom);
 }
 
-body.page-template-blog section.hero.is-custom {
+body.page-blog section.hero.is-custom {
   @include hero($yellow_saffron, $purple_wisteria, $opacity_top, $opacity_bottom);
 }
 
-body.page-template-contact section.hero.is-custom {
+body.page-contact section.hero.is-custom {
   @include hero($grey_mint, $purple_wisteria, $opacity_top, $opacity_bottom);
 }
 
