@@ -27,7 +27,7 @@ production:
         - ssh martin@$CI_DEPLOY_IP "cd /srv/www/martincarlin.uk && docker-compose up -d --force-recreate"
         - ssh -t martin@$CI_DEPLOY_IP "sudo find /srv/www/martincarlin.uk -type d -exec chmod 755 {} +"
         - ssh -t martin@$CI_DEPLOY_IP "sudo find /srv/www/martincarlin.uk -type f -exec chmod 644 {} +"
-        - ssh -t martin@$CI_DEPLOY_IP "sudo chmod 755 /srv/www/martincarlin.uk.co.uk"
+        - ssh -t martin@$CI_DEPLOY_IP "sudo chmod 755 /srv/www/martincarlin.uk"
 
     only:
         - master
