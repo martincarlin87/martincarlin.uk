@@ -1,18 +1,22 @@
+image: centos:7
+
+stages:
+    - compile
+    - deploy
+    
+
 compile:
-  image: jbergknoff/sass
+  image: node:8.15-alpine
   stage: deploy
   script:
-    - sass ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen2.css --style compressed
+    - npm install node-sass
+    - node-sass ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen2.css --style compressed
   only:
       - master
   artifacts:
     paths:
     - ./content/themes/carlin/assets/css
 
-image: centos:7
-
-stages:
-    - deploy
 
 before_script:
     - yum install which -y
@@ -42,3 +46,4 @@ production:
 
     only:
         - master
+        
