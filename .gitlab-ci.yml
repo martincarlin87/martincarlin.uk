@@ -11,7 +11,7 @@ compile:
   image: node:8.15-alpine
   script:
     - yarn global add node-sass
-    - node-sass ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen2.css --style compressed
+    - node-sass ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen.css --style compressed
   only:
       - master
   artifacts:
