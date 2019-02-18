@@ -16,7 +16,7 @@ compile:
       - master
   artifacts:
     paths:
-    - ./content/themes/carlin/assets/css
+      - ./content/themes/carlin/assets/css
 
 
     
