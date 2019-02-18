@@ -8,7 +8,7 @@ compile:
   image: node:8.15-alpine
   stage: deploy
   script:
-    - npm install node-sass
+    - npm install -g node-sass
     - node-sass ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen2.css --style compressed
   only:
       - master
