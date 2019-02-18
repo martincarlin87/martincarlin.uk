@@ -20,7 +20,7 @@ compile:
 
     
 deploy:
-    stage: compile
+    stage: deploy
     image: centos:7
     script:
         - yum install which -y
