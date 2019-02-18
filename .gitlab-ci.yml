@@ -5,6 +5,7 @@ stages:
     - deploy
     
 compile:
+  stage: compile
   image: node:8.15-alpine
   script:
     - sudo npm install -g node-sass
