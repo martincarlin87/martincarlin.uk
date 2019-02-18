@@ -76,3 +76,19 @@ button.button > i {
   margin-right: 5px;
 }
 
+.gist {
+  
+  width:100%;
+   
+  & table {
+    table-layout: fixed;
+  }
+
+  & td.js-line-number {
+    // We need an explicit width for the other column to be auto
+	width: 50px; 
+	  text-align: center;
+  }
+ 
+}
+
