@@ -2,7 +2,7 @@ compile:
   image: jbergknoff/sass
   stage: deploy
   script:
-    - ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen2.css --style compressed
+    - sass ./content/themes/carlin/assets/sass/input.scss ./content/themes/carlin/assets/css/screen2.css --style compressed
   only:
       - master
   artifacts:
