@@ -3,10 +3,11 @@ image: centos:7
 before_script:
 
 stages:
+    - compile
     - deploy
     
 compile:
-  stage: deploy
+  stage: compile
   image: node:8.15-alpine
   script:
     - yarn global add node-sass
