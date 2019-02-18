@@ -12,8 +12,8 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - ./data/martincarlin.sql:/docker-entrypoint-initdb.d/martincarlin.sql
+    # volumes:
+      # - ./data/martincarlin.sql:/docker-entrypoint-initdb.d/martincarlin.sql
     networks:
       - default
 
