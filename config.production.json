@@ -14,7 +14,14 @@
     }
   },
   "mail": {
-    "transport": "Direct"
+    "transport": "SMTP",
+    "options": {
+      "service": "Sendgrid",
+      "auth": {
+        "user": "apikey",
+        "pass": "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"
+      }
+    }
   },
   "logging": {
     "transports": [
