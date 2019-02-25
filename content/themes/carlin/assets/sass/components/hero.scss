@@ -16,7 +16,8 @@ section.is-slanted:before {
 @mixin hero($top_colour, $bottom_colour, $top_opacity, $bottom_opacity) {
 
   background:
-    linear-gradient( 
+    linear-gradient(
+      45deg,
       transparentize($top_colour, $top_opacity),
       transparentize($bottom_colour, $bottom_opacity)
     ),
