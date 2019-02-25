@@ -39,7 +39,7 @@ deploy:
         - yum install rsync -y
         - ssh -t martin@$CI_DEPLOY_IP
         - mkdir -p /srv/www/martincarlin.uk
-        - rsync -rav -e ssh --exclude='.git/' --exclude='.gitignore' --exclude='.gitlab-ci.yml' --exclude='.env.local' --exclude='config.development.json' ./ martin@$CI_DEPLOY_IP:/srv/www/martincarlin.uk
+        - rsync -ravu -e ssh --exclude='.git/' --exclude='.gitignore' --exclude='.gitlab-ci.yml' --exclude='.env.local' --exclude='config.development.json' ./ martin@$CI_DEPLOY_IP:/srv/www/martincarlin.uk
         - ssh martin@$CI_DEPLOY_IP "cd /srv/www/martincarlin.uk && docker-compose up -d --force-recreate"
         - ssh -t martin@$CI_DEPLOY_IP "sudo find /srv/www/martincarlin.uk -type d -exec chmod 755 {} +"
         - ssh -t martin@$CI_DEPLOY_IP "sudo find /srv/www/martincarlin.uk -type f -exec chmod 644 {} +"
