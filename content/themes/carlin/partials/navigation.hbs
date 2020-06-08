@@ -4,7 +4,7 @@
   <nav class="navbar is-marginless">
     {{#foreach navigation}}
       <p class="navbar-item has-text-centered nav-{{slug}}{{#if current}} nav-current{{/if}}">
-        <a class="link" href="{{url absolute="true"}}">{{label}}</a>
+        <a class="link" href="{{url absolute="false"}}">{{label}}</a>
       </p>
     {{/foreach}}
   </nav>

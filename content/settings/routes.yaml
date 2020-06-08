@@ -1,8 +1,28 @@
 routes:
 
+  /:
+    data: page.home
+    template: home
+
+  /about/:
+    data: page.about
+    template: about
+
+  /cv-and-skills/:
+    data: page.cv-and-skills
+    template: cv-and-skills
+
+  /blog/:
+    data: page.blog
+    template: blog
+
+  /contact/:
+    data: page.contact
+    template: contact
+
 collections:
   /:
-    permalink: '{globals.permalinks}' # special 1.0 compatibility setting. See the docs for details.
+    permalink: /{year}/{month}/{day}/{slug}/ 
     template:
       - index
 
