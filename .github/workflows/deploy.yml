@@ -1,12 +1,14 @@
 name: deploy
 
-# Deploy fires whenever any of the three CI workflows completes on main.
-# A `gate` job verifies that ALL THREE (tests, lint, static-analysis) have
-# succeeded for the same commit — otherwise the deploy job is skipped or
-# failed accordingly. Manual runs via workflow_dispatch bypass the gate.
+# Deploy fires once per commit, when `tests` completes on main. The `gate`
+# job then queries lint and static-analysis for the same SHA and only
+# proceeds if ALL THREE succeeded — if either is still running, the gate
+# waits (polling) rather than skipping. Manual runs via workflow_dispatch
+# bypass the gate. Triggering off a single workflow (instead of all three)
+# avoids the previous behaviour of three deploy runs per commit.
 on:
   workflow_run:
-    workflows: [tests, lint, static-analysis]
+    workflows: [tests]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -23,16 +25,15 @@ permissions:
 
 jobs:
   # ────────────────────────── GATE ─────────────────────────────────
-  # Always runs. Decides whether the deploy job should proceed by querying
-  # the latest run of each required workflow for the same SHA:
+  # Polls until tests, lint, and static-analysis have all finished for the
+  # triggering SHA, then:
   #   - all three succeeded  → proceed = true
   #   - any one failed       → exit 1 (gate red, deploy never runs)
-  #   - any not yet complete → proceed = false (silent skip; the next
-  #                            workflow_run firing for this SHA will retry)
+  #   - timeout reached      → proceed = false (deploy skipped)
   gate:
     name: gate
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.head_branch == 'main'
@@ -40,7 +41,7 @@ jobs:
       proceed: ${{ steps.check.outputs.proceed }}
       sha: ${{ steps.check.outputs.sha }}
     steps:
-      - name: Resolve commit and verify required workflows
+      - name: Resolve commit and wait for required workflows
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,37 +62,54 @@ jobs:
 
           SHA="$WR_SHA"
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "Checking required workflows for $SHA"
+          echo "Waiting for required workflows on $SHA"
 
-          all_ready=true
-          for workflow in tests.yml lint.yml static-analysis.yml; do
-            result=$(gh run list \
-              --repo "$REPO" \
-              --workflow "$workflow" \
-              --commit "$SHA" \
-              --limit 1 \
-              --json status,conclusion 2>/dev/null || echo '[]')
+          # Poll for up to ~12 minutes (72 * 10s). Lint and static-analysis
+          # typically finish within a couple of minutes of tests.
+          attempts=72
+          sleep_seconds=10
 
-            status=$(echo "$result" | jq -r '.[0].status // "missing"')
-            conclusion=$(echo "$result" | jq -r '.[0].conclusion // "null"')
+          for attempt in $(seq 1 "$attempts"); do
+            all_ready=true
+            any_failed=false
 
-            printf '  %-22s status=%-12s conclusion=%s\n' "$workflow" "$status" "$conclusion"
+            for workflow in tests.yml lint.yml static-analysis.yml; do
+              result=$(gh run list \
+                --repo "$REPO" \
+                --workflow "$workflow" \
+                --commit "$SHA" \
+                --limit 1 \
+                --json status,conclusion 2>/dev/null || echo '[]')
 
-            if [ "$status" = "missing" ] || [ "$status" != "completed" ]; then
-              all_ready=false
-            elif [ "$conclusion" != "success" ]; then
-              echo "::error::$workflow finished with conclusion '$conclusion' — aborting deploy."
+              status=$(echo "$result" | jq -r '.[0].status // "missing"')
+              conclusion=$(echo "$result" | jq -r '.[0].conclusion // "null"')
+
+              printf '  [%02d] %-22s status=%-12s conclusion=%s\n' \
+                "$attempt" "$workflow" "$status" "$conclusion"
+
+              if [ "$status" = "missing" ] || [ "$status" != "completed" ]; then
+                all_ready=false
+              elif [ "$conclusion" != "success" ]; then
+                echo "::error::$workflow finished with conclusion '$conclusion' — aborting deploy."
+                any_failed=true
+              fi
+            done
+
+            if [ "$any_failed" = "true" ]; then
               exit 1
             fi
+
+            if [ "$all_ready" = "true" ]; then
+              echo "proceed=true" >> "$GITHUB_OUTPUT"
+              echo "All required workflows succeeded for $SHA. Proceeding."
+              exit 0
+            fi
+
+            sleep "$sleep_seconds"
           done
 
-          if [ "$all_ready" = "true" ]; then
-            echo "proceed=true" >> "$GITHUB_OUTPUT"
-            echo "All required workflows succeeded for $SHA. Proceeding."
-          else
-            echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Not all workflows have completed for $SHA yet. Skipping; the next workflow_run firing will retry."
-          fi
+          echo "proceed=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Timed out waiting for lint/static-analysis on $SHA. Skipping deploy."
 
   # ────────────────────────── DEPLOY ───────────────────────────────
   deploy:
