@@ -1,0 +1,25 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/pestphp/pest/phpstan-pest-extension.neon
+
+parameters:
+    paths:
+        - app/
+        - routes/
+        - tests/
+
+    level: 5
+
+    excludePaths:
+        - bootstrap/cache/*
+        - storage/*
+        - vendor/*
+
+    ignoreErrors:
+        # Pest binds $this in test closures to a TestCase at runtime, but
+        # PHPStan sees TestCall (the chainable returned from test()). All
+        # methods like get(), post(), actingAs(), assertAuthenticated() etc.
+        # are valid — silence those false positives in tests/.
+        -
+            message: '#Call to an undefined method Pest\\PendingCalls\\TestCall::#'
+            path: tests/*
