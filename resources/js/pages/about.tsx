@@ -1,17 +1,53 @@
 import { Head } from '@inertiajs/react';
 
 const STACK = [
-    { k: 'languages', v: 'PHP · TypeScript · SQL · a little Go' },
-    { k: 'server', v: 'Laravel · Postgres · Redis · queues' },
-    { k: 'client', v: 'React · Inertia · Tailwind · Vite' },
-    { k: 'plumbing', v: 'GitHub Actions · Forge · Cloud · Docker' },
-    { k: 'likes', v: 'Boring tech, fast feedback loops, small PRs' },
+    {
+        label: 'languages',
+        value: 'PHP 8.5 · TypeScript · SQL · a little Go',
+    },
+    { label: 'server', value: 'Laravel 13 · MySQL · Redis · queues' },
+    { label: 'client', value: 'React 19 · Inertia 3 · Tailwind 4 · Vite' },
+    {
+        label: 'tooling',
+        value: 'Laravel Sail · GitHub Actions · Pint · PHPStan · ESLint · Pest',
+    },
+    {
+        label: 'integrations',
+        value: 'Stripe · AWS Bedrock · Slack · Microsoft · Google · Okta · Hubspot',
+    },
+    {
+        label: 'likes',
+        value: 'Boring tech, fast feedback loops, small PRs, careful reviews',
+    },
 ];
 
 const META = [
-    { k: 'location', v: 'Glasgow, UK · 55.86° N' },
-    { k: 'years', v: '~12 shipping' },
-    { k: 'status', v: 'open to good problems' },
+    { label: 'location', value: 'Glasgow, UK · 55.86° N' },
+    { label: 'years', value: '~14 shipping' },
+    { label: 'status', value: 'open to good problems' },
+];
+
+const ELSEWHERE = [
+    {
+        label: 'github',
+        value: '@martincarlin87',
+        href: 'https://github.com/martincarlin87',
+    },
+    {
+        label: 'linkedin',
+        value: '/in/martincarlin87',
+        href: 'https://www.linkedin.com/in/martincarlin87/',
+    },
+    {
+        label: 'stack',
+        value: '10k+ rep',
+        href: 'https://stackoverflow.com/users/634120/martincarlin87',
+    },
+    {
+        label: 'laramap',
+        value: 'developer profile',
+        href: 'https://laramap.dev/developer/019a639c-89ef-73a3-92d8-5a912d333c0f',
+    },
 ];
 
 export default function About() {
@@ -52,9 +88,9 @@ export default function About() {
                                     // meta
                                 </p>
                                 <dl className="space-y-2">
-                                    {META.map((m) => (
+                                    {META.map((metaItem) => (
                                         <div
-                                            key={m.k}
+                                            key={metaItem.label}
                                             className="grid grid-cols-3 gap-x-3"
                                         >
                                             <dt
@@ -63,7 +99,7 @@ export default function About() {
                                                     color: 'var(--accent)',
                                                 }}
                                             >
-                                                {m.k}
+                                                {metaItem.label}
                                             </dt>
                                             <dd
                                                 className="col-span-2"
@@ -72,7 +108,7 @@ export default function About() {
                                                     fontSize: '0.85rem',
                                                 }}
                                             >
-                                                {m.v}
+                                                {metaItem.value}
                                             </dd>
                                         </div>
                                     ))}
@@ -81,20 +117,42 @@ export default function About() {
 
                             <div>
                                 <p
-                                    className="site-mono mb-2"
+                                    className="site-mono mb-3"
                                     style={{ color: 'var(--dim)' }}
                                 >
-                                    // signature
+                                    // elsewhere
                                 </p>
-                                <p
-                                    className="site-italic"
-                                    style={{
-                                        fontSize: '2.4rem',
-                                        lineHeight: 0.95,
-                                    }}
-                                >
-                                    mc.
-                                </p>
+                                <ul className="space-y-2">
+                                    {ELSEWHERE.map((entry) => (
+                                        <li
+                                            key={entry.label}
+                                            className="grid grid-cols-3 items-baseline gap-x-3"
+                                        >
+                                            <span
+                                                className="site-mono"
+                                                style={{
+                                                    color: 'var(--accent)',
+                                                }}
+                                            >
+                                                {entry.label}
+                                            </span>
+                                            <a
+                                                href={entry.href}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="site-link col-span-2"
+                                                style={{
+                                                    fontFamily:
+                                                        'var(--font-mono)',
+                                                    fontSize: '0.78rem',
+                                                    color: 'var(--ink-soft)',
+                                                }}
+                                            >
+                                                {entry.value}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </aside>
 
@@ -116,38 +174,48 @@ export default function About() {
                                 >
                                     {'> '}
                                 </span>
-                                I&apos;m a software engineer based in Glasgow.
-                                Most of my career has been spent inside the{' '}
+                                I&apos;m a software engineer based in Glasgow,
+                                building for the web professionally since 2011.
+                                Mostly{' '}
                                 <span style={{ color: 'var(--ink)' }}>
-                                    Laravel and React
+                                    PHP and Laravel
+                                </span>
+                                , and increasingly{' '}
+                                <span style={{ color: 'var(--ink)' }}>
+                                    React via Inertia
                                 </span>{' '}
-                                ecosystems, building internal-facing tools and
-                                the kind of customer-facing products that have
-                                to keep running for years rather than quarters.
+                                — the kind of work that has to keep running for
+                                years rather than quarters.
+                            </p>
+                            <p>
+                                Currently a senior dev at Fastdox , where I
+                                recently shipped an AI document verification
+                                microservice (Laravel 13 + Inertia + React, full
+                                test suite) after taking the project over from a
+                                deadline that wasn&apos;t going to be hit.
+                                Before that, three years at CultureAI shipping
+                                Gen AI features through AWS Bedrock and
+                                integrating with most of the identity providers
+                                you can name; before that, tech lead at Product
+                                Guru, taking the company from zero to £500k+
+                                revenue.
                             </p>
                             <p>
                                 I care about the unfashionable bits of the craft
-                                — clean migrations, observable queues, a test
+                                - clean migrations, observable queues, a test
                                 suite that runs in under a minute, commit
-                                messages that read like sentences. The faster
-                                the feedback loop, the better the decisions
-                                further down the line.
+                                messages that read like sentences. I review pull
+                                requests carefully, answer Laravel questions on
+                                Stack Overflow (~10k rep), and write up anything
+                                I&apos;ve solved that wasn&apos;t already
+                                documented.
                             </p>
                             <p>
                                 Outside of work I tinker with side projects,
-                                keep one eye on the JavaScript world (it never
-                                stops), and the rest on family life. This site
-                                is part portfolio, part field notebook —{' '}
-                                <span
-                                    style={{
-                                        fontFamily: 'var(--font-serif)',
-                                        fontStyle: 'italic',
-                                        color: 'var(--ink)',
-                                    }}
-                                >
-                                    equal parts of both
-                                </span>
-                                .
+                                play bass in a wedding band that tours Scotland,
+                                and split the rest of my time between
+                                practising, gaming, a Husky called Luna, and
+                                three Ragdoll cats.
                             </p>
                         </article>
                     </div>
@@ -178,9 +246,9 @@ export default function About() {
                             </h2>
                         </div>
                         <dl className="col-span-12 md:col-span-9">
-                            {STACK.map((row) => (
+                            {STACK.map((stackItem) => (
                                 <div
-                                    key={row.k}
+                                    key={stackItem.label}
                                     className="grid grid-cols-12 items-baseline gap-x-6 border-t py-4"
                                     style={{
                                         borderColor: 'var(--rule)',
@@ -192,7 +260,7 @@ export default function About() {
                                             color: 'var(--accent)',
                                         }}
                                     >
-                                        {row.k}
+                                        {stackItem.label}
                                     </dt>
                                     <dd
                                         className="col-span-8 md:col-span-9"
@@ -200,7 +268,7 @@ export default function About() {
                                             color: 'var(--ink-soft)',
                                         }}
                                     >
-                                        {row.v}
+                                        {stackItem.value}
                                     </dd>
                                 </div>
                             ))}

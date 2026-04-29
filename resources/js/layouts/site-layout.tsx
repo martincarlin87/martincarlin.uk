@@ -19,7 +19,7 @@ export default function SiteLayout({ children }: PropsWithChildren) {
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     rel="stylesheet"
-                    href="https://fonts.bunny.net/css?family=jetbrains-mono:400,500,600|newsreader:400i,500i&display=swap"
+                    href="https://fonts.bunny.net/css?family=jetbrains-mono:400,500,600|newsreader:400,500&display=swap"
                 />
             </Head>
 

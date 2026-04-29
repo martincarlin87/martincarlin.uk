@@ -1,8 +1,12 @@
 name: deploy
 
+# Deploy fires whenever any of the three CI workflows completes on main.
+# A `gate` job verifies that ALL THREE (tests, lint, static-analysis) have
+# succeeded for the same commit — otherwise the deploy job is skipped or
+# failed accordingly. Manual runs via workflow_dispatch bypass the gate.
 on:
   workflow_run:
-    workflows: ['tests']
+    workflows: [tests, lint, static-analysis]
     types: [completed]
     branches: [main]
   workflow_dispatch:
@@ -11,21 +15,97 @@ concurrency:
   group: deploy-production
   cancel-in-progress: false
 
+# Gate needs `actions: read` to query other workflows' run status.
+# Deploy needs `contents: read` for checkout. Nothing else.
+permissions:
+  contents: read
+  actions: read
+
 jobs:
+  # ────────────────────────── GATE ─────────────────────────────────
+  # Always runs. Decides whether the deploy job should proceed by querying
+  # the latest run of each required workflow for the same SHA:
+  #   - all three succeeded  → proceed = true
+  #   - any one failed       → exit 1 (gate red, deploy never runs)
+  #   - any not yet complete → proceed = false (silent skip; the next
+  #                            workflow_run firing for this SHA will retry)
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.head_branch == 'main'
+    outputs:
+      proceed: ${{ steps.check.outputs.proceed }}
+      sha: ${{ steps.check.outputs.sha }}
+    steps:
+      - name: Resolve commit and verify required workflows
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          WR_SHA: ${{ github.event.workflow_run.head_sha }}
+          DISPATCH_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            SHA="$DISPATCH_SHA"
+            echo "Manual dispatch — bypassing gate for $SHA."
+            echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          SHA="$WR_SHA"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Checking required workflows for $SHA"
+
+          all_ready=true
+          for workflow in tests.yml lint.yml static-analysis.yml; do
+            result=$(gh run list \
+              --repo "$REPO" \
+              --workflow "$workflow" \
+              --commit "$SHA" \
+              --limit 1 \
+              --json status,conclusion 2>/dev/null || echo '[]')
+
+            status=$(echo "$result" | jq -r '.[0].status // "missing"')
+            conclusion=$(echo "$result" | jq -r '.[0].conclusion // "null"')
+
+            printf '  %-22s status=%-12s conclusion=%s\n' "$workflow" "$status" "$conclusion"
+
+            if [ "$status" = "missing" ] || [ "$status" != "completed" ]; then
+              all_ready=false
+            elif [ "$conclusion" != "success" ]; then
+              echo "::error::$workflow finished with conclusion '$conclusion' — aborting deploy."
+              exit 1
+            fi
+          done
+
+          if [ "$all_ready" = "true" ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+            echo "All required workflows succeeded for $SHA. Proceeding."
+          else
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Not all workflows have completed for $SHA yet. Skipping; the next workflow_run firing will retry."
+          fi
+
+  # ────────────────────────── DEPLOY ───────────────────────────────
   deploy:
     name: deploy to production
+    needs: gate
+    if: needs.gate.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 15
 
-    # Only run when triggered manually OR when the tests workflow succeeded on main
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == 'main')
-
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.gate.outputs.sha }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -56,6 +136,9 @@ jobs:
           APP_ENV: ${{ vars.APP_ENV }}
           APP_DEBUG: ${{ vars.APP_DEBUG }}
           APP_URL: ${{ vars.APP_URL }}
+          SMTP2GO_API_KEY: ${{ secrets.SMTP2GO_API_KEY }}
+          CONTACT_FROM_ADDRESS: ${{ vars.CONTACT_FROM_ADDRESS }}
+          CONTACT_TO_ADDRESS: ${{ vars.CONTACT_TO_ADDRESS }}
         run: |
           cat > .env <<ENV
           APP_NAME="${APP_NAME}"
@@ -92,6 +175,10 @@ jobs:
           MAIL_MAILER=log
           MAIL_FROM_ADDRESS="martin@martincarlin.uk"
           MAIL_FROM_NAME="\${APP_NAME}"
+
+          SMTP2GO_API_KEY=${SMTP2GO_API_KEY}
+          CONTACT_FROM_ADDRESS=${CONTACT_FROM_ADDRESS:-noreply@martincarlin.uk}
+          CONTACT_TO_ADDRESS=${CONTACT_TO_ADDRESS:-martin@martincarlin.uk}
 
           VITE_APP_NAME="\${APP_NAME}"
           ENV

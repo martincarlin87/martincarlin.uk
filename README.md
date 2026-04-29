@@ -3,6 +3,7 @@
 [![tests](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/tests.yml)
 [![lint](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/lint.yml)
 [![static-analysis](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/static-analysis.yml)
+[![lighthouse](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/lighthouse.yml/badge.svg?branch=main)](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/lighthouse.yml)
 [![deploy](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/martincarlin87/martincarlin.uk/actions/workflows/deploy.yml)
 
 Personal site, built on Laravel 13, Inertia, and React.

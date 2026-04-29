@@ -4,27 +4,60 @@ import { about, contact } from '@/routes';
 
 const LOG = [
     {
-        time: '2025',
-        msg: 'Senior engineer at Fastdox · Laravel · Vue · Postgres',
+        year: '2026 →',
+        summary:
+            'Senior dev at Fastdox · Laravel 13 + Inertia + React · AI document verification',
     },
     {
-        time: '2024',
-        msg: 'Lead on document automation tooling · Inertia · TypeScript',
+        year: '2023–25',
+        summary:
+            'Senior dev at CultureAI · PHP 8.3 + Laravel 11 microservices · Vue 3 + Inertia · AWS Bedrock GenAI features',
     },
     {
-        time: '2023',
-        msg: 'Internal platform refresh · React · Tailwind · CI',
+        year: '2020–22',
+        summary:
+            'Tech lead at Product Guru · Stripe · Jitsi virtual events · Hubspot migration · React Native',
     },
     {
-        time: '2022',
-        msg: 'API & integration layer · Laravel · Redis · Queues',
+        year: '2019–20',
+        summary:
+            'Senior at Cyberhawk Innovations · Drone imagery tooling in Go · Laravel proof-of-concept rewrites',
+    },
+    {
+        year: '2018–19',
+        summary:
+            'Software dev at Valipat / Envoy / Delegate / IPAN · refactoring legacy code, AWS migrations',
+    },
+    {
+        year: '2016–18',
+        summary:
+            'Web app dev at TOM Vehicle Rental · Customer Portal, Fleet Manager, offline-first checksheets',
+    },
+    {
+        year: '2013–16',
+        summary:
+            'Sole dev at Commsworld · Ruby on Rails CRM · EchoSign integration · ISO 27001 tooling',
+    },
+    {
+        year: '2011–13',
+        summary:
+            'Web dev at Optical Express · marketing campaigns, landing pages, the odd Facebook app',
     },
 ];
 
 const CURRENTLY = [
-    { k: 'reading', v: 'A Philosophy of Software Design — John Ousterhout' },
-    { k: 'building', v: 'A small CLI for tracking deploy windows' },
-    { k: 'thinking', v: 'About the cost of premature abstractions' },
+    {
+        label: 'shipping',
+        value: 'AI document verification at Fastdox — Laravel 13 + Inertia',
+    },
+    {
+        label: 'building',
+        value: 'Plantfitter — Laravel 13, Inertia 3, React 19, full GitHub Actions CI',
+    },
+    {
+        label: 'offline',
+        value: 'Bass in a wedding band touring Scotland · PUBG & EAFC · one Husky and three Ragdoll cats',
+    },
 ];
 
 export default function Home() {
@@ -75,12 +108,12 @@ export default function Home() {
                             products in{' '}
                             <span style={{ color: 'var(--ink)' }}>
                                 Laravel and React
-                            </span>
-                            . Currently shipping at{' '}
+                            </span>{' '}
+                            since 2011. Currently shipping AI document
+                            verification at{' '}
                             <span
                                 style={{
                                     fontFamily: 'var(--font-serif)',
-                                    fontStyle: 'italic',
                                     color: 'var(--accent-2)',
                                     textShadow:
                                         '0 0 24px rgba(255, 43, 214, 0.3)',
@@ -88,7 +121,8 @@ export default function Home() {
                             >
                                 Fastdox
                             </span>
-                            , tinkering on side projects after hours.
+                            ; side projects in the evenings; bass in a wedding
+                            band on weekends.
                         </p>
 
                         <div className="mt-10 flex flex-wrap items-center gap-5">
@@ -160,9 +194,9 @@ export default function Home() {
                             </p>
                         </div>
                         <ul className="col-span-12 space-y-3 md:col-span-9">
-                            {CURRENTLY.map((row) => (
+                            {CURRENTLY.map((item) => (
                                 <li
-                                    key={row.k}
+                                    key={item.label}
                                     className="grid grid-cols-12 items-baseline gap-x-6"
                                 >
                                     <span
@@ -171,7 +205,7 @@ export default function Home() {
                                             color: 'var(--accent)',
                                         }}
                                     >
-                                        {row.k}
+                                        {item.label}
                                     </span>
                                     <span
                                         className="col-span-8 md:col-span-10"
@@ -179,7 +213,7 @@ export default function Home() {
                                             color: 'var(--ink-soft)',
                                         }}
                                     >
-                                        {row.v}
+                                        {item.value}
                                     </span>
                                 </li>
                             ))}
@@ -214,7 +248,7 @@ export default function Home() {
                     <ol className="col-span-12 md:col-span-9">
                         {LOG.map((entry) => (
                             <li
-                                key={entry.time + entry.msg}
+                                key={entry.year + entry.summary}
                                 className="grid grid-cols-12 items-baseline gap-x-6 border-t py-5"
                                 style={{
                                     borderColor: 'var(--rule)',
@@ -224,7 +258,7 @@ export default function Home() {
                                     className="site-mono col-span-3 md:col-span-2"
                                     style={{ color: 'var(--accent)' }}
                                 >
-                                    {entry.time}
+                                    {entry.year}
                                 </span>
                                 <span
                                     className="col-span-9 md:col-span-10"
@@ -233,7 +267,7 @@ export default function Home() {
                                         fontSize: '0.95rem',
                                     }}
                                 >
-                                    {entry.msg}
+                                    {entry.summary}
                                 </span>
                             </li>
                         ))}

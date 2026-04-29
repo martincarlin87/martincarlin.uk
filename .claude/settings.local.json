@@ -56,7 +56,22 @@
       "Bash(echo \"routes: exit=$?\")",
       "Bash(echo \"tests: exit=$?\")",
       "Bash(rm -rf .phpstan-cache/*)",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(ssh -T git@github.com)",
+      "Bash(composer validate *)",
+      "Bash(grep -nE '\\\\$[a-z]\\\\b|\\\\$[a-z]{1,3}\\\\s*=' app/Http/Controllers/HomeController.php)",
+      "Bash(grep -nE '\\\\$[a-z]\\\\b|\\\\$[a-z]{1,3}\\\\s*=' app/Http/Controllers/CurlController.php)",
+      "Bash(grep -nE '\\\\$[a-z]\\\\b|\\\\$[a-z]{1,3}\\\\s*=' app/Http/Controllers/ContactController.php)",
+      "Bash(grep -nE '\\\\b\\(let|const|var\\)\\\\s+\\([a-z]|[a-z]{1,3}\\)\\\\b' resources/js/components/curl-terminal.tsx)",
+      "Bash(grep -nE '\\\\b\\(let|const|var\\)\\\\s+\\([a-z]|[a-z]{1,3}\\)\\\\b' resources/js/layouts/site-layout.tsx)",
+      "Bash(grep -nE '\\\\b\\(let|const|var\\)\\\\s+\\([a-z]|[a-z]{1,3}\\)\\\\b' resources/js/pages/home.tsx)",
+      "Bash(grep -nE '\\\\b\\(let|const|var\\)\\\\s+\\([a-z]|[a-z]{1,3}\\)\\\\b' resources/js/pages/about.tsx)",
+      "Bash(grep -nE '\\\\b\\(let|const|var\\)\\\\s+\\([a-z]|[a-z]{1,3}\\)\\\\b' resources/js/pages/contact.tsx)",
+      "Bash(grep -vE '\\(ref|key|let i|for|}|^.{0,4}\\\\*\\)')",
+      "Bash(grep -nE '\\\\$[a-z]\\\\b\\\\s*=' app/Http/Controllers/HomeController.php)",
+      "Bash(grep -nE '\\\\$[a-z]\\\\b\\\\s*=' app/Http/Controllers/CurlController.php)",
+      "Bash(textutil -convert txt -output /tmp/cv.txt \"/Users/martin/Downloads/Martin Carlin - CV April 2026.docx\")",
+      "WebFetch(domain:developers.smtp2go.com)"
     ]
   },
   "enableAllProjectMcpServers": true,

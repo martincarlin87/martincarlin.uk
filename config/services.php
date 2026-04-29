@@ -37,4 +37,10 @@ return [
         ],
     ],
 
+    'smtp2go' => [
+        'api_key' => env('SMTP2GO_API_KEY'),
+        'sender' => env('CONTACT_FROM_ADDRESS', 'noreply@martincarlin.uk'),
+        'recipient' => env('CONTACT_TO_ADDRESS', 'martin@martincarlin.uk'),
+    ],
+
 ];

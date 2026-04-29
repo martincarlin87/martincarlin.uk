@@ -3,12 +3,30 @@ name: lint
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'LICENSE'
+      - '.github/dependabot.yml'
+      - '.github/CODEOWNERS'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'LICENSE'
+      - '.github/dependabot.yml'
+      - '.github/CODEOWNERS'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   php:
     name: php (pint)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
 
@@ -18,7 +36,20 @@ jobs:
           php-version: '8.4'
           tools: composer:v2
 
+      - name: Validate composer files
+        run: composer validate --strict --no-check-publish
+
+      - name: Cache composer vendor
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.4-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.4-
+
       - name: Install Dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Pint
@@ -27,6 +58,7 @@ jobs:
   js:
     name: js (eslint, prettier, tsc)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
 

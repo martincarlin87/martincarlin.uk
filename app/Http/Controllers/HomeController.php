@@ -26,9 +26,9 @@ class HomeController extends Controller
 
     private function isTerminalClient(Request $request): bool
     {
-        $ua = (string) $request->header('User-Agent', '');
+        $userAgent = (string) $request->header('User-Agent', '');
 
-        return (bool) preg_match('/\b(curl|wget|httpie|fetch|powershell)\b/i', $ua);
+        return (bool) preg_match('/\b(curl|wget|httpie|fetch|powershell)\b/i', $userAgent);
     }
 
     /**
@@ -37,47 +37,47 @@ class HomeController extends Controller
      */
     private function bio(): string
     {
-        $g = "\e[32m";
-        $c = "\e[36m";
-        $d = "\e[2m";
-        $b = "\e[1m";
-        $r = "\e[0m";
+        $green = "\e[32m";
+        $cyan = "\e[36m";
+        $dim = "\e[2m";
+        $bold = "\e[1m";
+        $reset = "\e[0m";
 
-        $width = 62;
-        $top = $g . '╭' . str_repeat('─', $width) . '╮' . $r;
-        $bot = $g . '╰' . str_repeat('─', $width) . '╯' . $r;
+        $boxWidth = 62;
+        $topBorder = $green . '╭' . str_repeat('─', $boxWidth) . '╮' . $reset;
+        $bottomBorder = $green . '╰' . str_repeat('─', $boxWidth) . '╯' . $reset;
 
         $rows = [];
-        $rows[] = $top;
-        $rows[] = $this->boxLine('', $width, $g, $r);
-        $rows[] = $this->boxLine("      {$g}{$b}Martin Carlin{$r}", $width, $g, $r);
-        $rows[] = $this->boxLine('      Software Engineer based in 🏴󠁧󠁢󠁳󠁣󠁴󠁿', $width, $g, $r);
-        $rows[] = $this->boxLine('', $width, $g, $r);
-        $rows[] = $this->boxLine($this->linkRow('Twitter', 'https://twitter.com/', 'martincarlin87', '', $g, $c, $d, $r), $width, $g, $r);
-        $rows[] = $this->boxLine($this->linkRow('LinkedIn', 'https://linkedin.com/in/', 'martincarlin87', '', $g, $c, $d, $r), $width, $g, $r);
-        $rows[] = $this->boxLine($this->linkRow('Github', 'https://github.com/', 'martincarlin87', '', $g, $c, $d, $r), $width, $g, $r);
-        $rows[] = $this->boxLine($this->linkRow('SO', 'https://stackoverflow.com/users/634120/', 'martincarlin87', '', $g, $c, $d, $r), $width, $g, $r);
-        $rows[] = $this->boxLine('', $width, $g, $r);
-        $rows[] = $this->boxLine($this->linkRow('Website', 'https://', 'martincarlin', '.uk', $g, $c, $d, $r), $width, $g, $r);
-        $rows[] = $this->boxLine('', $width, $g, $r);
-        $rows[] = $bot;
+        $rows[] = $topBorder;
+        $rows[] = $this->boxLine('', $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine("      {$green}{$bold}Martin Carlin{$reset}", $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine('      Software Engineer based in 🏴󠁧󠁢󠁳󠁣󠁴󠁿', $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine('', $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine($this->linkRow('Twitter', 'https://twitter.com/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine($this->linkRow('LinkedIn', 'https://linkedin.com/in/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine($this->linkRow('Github', 'https://github.com/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine($this->linkRow('SO', 'https://stackoverflow.com/users/634120/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine('', $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine($this->linkRow('Website', 'https://', 'martincarlin', '.uk', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine('', $boxWidth, $green, $reset);
+        $rows[] = $bottomBorder;
 
         return implode("\n", $rows) . "\n";
     }
 
-    private function boxLine(string $content, int $width, string $g, string $r): string
+    private function boxLine(string $content, int $boxWidth, string $green, string $reset): string
     {
-        $stripped = preg_replace('/\e\[[0-9;]*m/', '', $content) ?? '';
-        $visible = mb_strwidth($stripped, 'UTF-8');
-        $pad = max(0, $width - $visible);
+        $strippedContent = preg_replace('/\e\[[0-9;]*m/', '', $content) ?? '';
+        $visibleWidth = mb_strwidth($strippedContent, 'UTF-8');
+        $paddingLength = max(0, $boxWidth - $visibleWidth);
 
-        return "{$g}│{$r}{$content}" . str_repeat(' ', $pad) . "{$g}│{$r}";
+        return "{$green}│{$reset}{$content}" . str_repeat(' ', $paddingLength) . "{$green}│{$reset}";
     }
 
-    private function linkRow(string $label, string $prefix, string $handle, string $suffix, string $g, string $c, string $d, string $r): string
+    private function linkRow(string $label, string $urlPrefix, string $handle, string $urlSuffix, string $green, string $cyan, string $dim, string $reset): string
     {
-        $padded = str_pad($label, 10, ' ');
+        $paddedLabel = str_pad($label, 10, ' ');
 
-        return "  {$g}{$padded}{$r}  {$d}{$prefix}{$r}{$c}{$handle}{$r}{$d}{$suffix}{$r}";
+        return "  {$green}{$paddedLabel}{$reset}  {$dim}{$urlPrefix}{$reset}{$cyan}{$handle}{$reset}{$dim}{$urlSuffix}{$reset}";
     }
 }

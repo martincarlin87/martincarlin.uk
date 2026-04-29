@@ -2,119 +2,134 @@ import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 
 const COMMAND = 'curl martincarlin.uk';
-const TYPE_MS = 28;
-const PRE_RESPONSE_MS = 200;
-const LINE_MS = 55;
+const TYPE_INTERVAL_MS = 28;
+const PRE_RESPONSE_DELAY_MS = 200;
+const LINE_REVEAL_INTERVAL_MS = 55;
 
-async function runCurl(): Promise<string> {
-    const r = await fetch('/run-curl', { cache: 'no-store' });
+async function fetchCurlOutput(): Promise<string> {
+    const response = await fetch('/run-curl', { cache: 'no-store' });
 
-    return r.text();
+    return response.text();
 }
 
 export default function CurlTerminal() {
-    const [typed, setTyped] = useState(0);
-    const [lines, setLines] = useState<string[]>([]);
-    const [running, setRunning] = useState(false);
-    const [hasRun, setHasRun] = useState(false);
-    const timers = useRef<number[]>([]);
+    const [typedCharCount, setTypedCharCount] = useState(0);
+    const [responseLines, setResponseLines] = useState<string[]>([]);
+    const [isRunning, setIsRunning] = useState(false);
+    const [hasRunBefore, setHasRunBefore] = useState(false);
+    const pendingTimeouts = useRef<number[]>([]);
     const panelRef = useRef<HTMLDivElement>(null);
 
-    const clear = () => {
-        timers.current.forEach((id) => window.clearTimeout(id));
-        timers.current = [];
+    const clearPendingTimeouts = () => {
+        pendingTimeouts.current.forEach((timerId) =>
+            window.clearTimeout(timerId),
+        );
+        pendingTimeouts.current = [];
     };
 
     const run = () => {
-        if (running) {
+        if (isRunning) {
             return;
         }
 
-        clear();
-        setRunning(true);
-        setHasRun(true);
-        setTyped(0);
-        setLines([]);
+        clearPendingTimeouts();
+        setIsRunning(true);
+        setHasRunBefore(true);
+        setTypedCharCount(0);
+        setResponseLines([]);
 
-        const reduced =
+        const prefersReducedMotion =
             typeof window !== 'undefined' &&
             window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        if (reduced) {
-            setTyped(COMMAND.length);
+        if (prefersReducedMotion) {
+            setTypedCharCount(COMMAND.length);
         } else {
-            for (let i = 1; i <= COMMAND.length; i++) {
-                timers.current.push(
-                    window.setTimeout(() => setTyped(i), i * TYPE_MS),
+            for (let charIndex = 1; charIndex <= COMMAND.length; charIndex++) {
+                pendingTimeouts.current.push(
+                    window.setTimeout(
+                        () => setTypedCharCount(charIndex),
+                        charIndex * TYPE_INTERVAL_MS,
+                    ),
                 );
             }
         }
 
-        const startResponseAt = reduced
+        const responseStartDelayMs = prefersReducedMotion
             ? 0
-            : COMMAND.length * TYPE_MS + PRE_RESPONSE_MS;
+            : COMMAND.length * TYPE_INTERVAL_MS + PRE_RESPONSE_DELAY_MS;
 
-        timers.current.push(
+        pendingTimeouts.current.push(
             window.setTimeout(async () => {
-                let raw: string;
+                let rawOutput: string;
 
                 try {
-                    raw = await runCurl();
-                } catch (err) {
-                    const msg = err instanceof Error ? err.message : 'unknown';
-                    raw = `curl: failed to execute\n* error: ${msg}\n`;
+                    rawOutput = await fetchCurlOutput();
+                } catch (error) {
+                    const errorMessage =
+                        error instanceof Error ? error.message : 'unknown';
+                    rawOutput = `curl: failed to execute\n* error: ${errorMessage}\n`;
                 }
 
-                const responseLines = raw.replace(/\n$/, '').split('\n');
+                const outputLines = rawOutput.replace(/\n$/, '').split('\n');
 
-                if (reduced) {
-                    setLines(responseLines);
-                    setRunning(false);
+                if (prefersReducedMotion) {
+                    setResponseLines(outputLines);
+                    setIsRunning(false);
 
                     return;
                 }
 
-                for (let i = 1; i <= responseLines.length; i++) {
-                    timers.current.push(
+                for (
+                    let lineCount = 1;
+                    lineCount <= outputLines.length;
+                    lineCount++
+                ) {
+                    pendingTimeouts.current.push(
                         window.setTimeout(
-                            () => setLines(responseLines.slice(0, i)),
-                            i * LINE_MS,
+                            () =>
+                                setResponseLines(
+                                    outputLines.slice(0, lineCount),
+                                ),
+                            lineCount * LINE_REVEAL_INTERVAL_MS,
                         ),
                     );
                 }
 
-                timers.current.push(
+                pendingTimeouts.current.push(
                     window.setTimeout(
-                        () => setRunning(false),
-                        responseLines.length * LINE_MS + 120,
+                        () => setIsRunning(false),
+                        outputLines.length * LINE_REVEAL_INTERVAL_MS + 120,
                     ),
                 );
-            }, startResponseAt),
+            }, responseStartDelayMs),
         );
     };
 
-    useEffect(() => clear, []);
+    useEffect(() => clearPendingTimeouts, []);
 
     useEffect(() => {
         panelRef.current?.focus({ preventScroll: true });
     }, []);
 
-    const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-        if (running) {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (isRunning) {
             return;
         }
 
         if (
-            e.key === 'Enter' ||
-            (e.key === ' ' && e.target === e.currentTarget)
+            event.key === 'Enter' ||
+            (event.key === ' ' && event.target === event.currentTarget)
         ) {
-            e.preventDefault();
+            event.preventDefault();
             run();
         }
     };
 
-    const showCursor = !hasRun || running;
-    const typedCmd = hasRun ? COMMAND.slice(0, typed) : COMMAND;
+    const showCursor = !hasRunBefore || isRunning;
+    const displayedCommand = hasRunBefore
+        ? COMMAND.slice(0, typedCharCount)
+        : COMMAND;
 
     return (
         <div
@@ -124,7 +139,7 @@ export default function CurlTerminal() {
             role="region"
             aria-label="Interactive terminal — press Enter to run curl"
             aria-live="polite"
-            onKeyDown={onKeyDown}
+            onKeyDown={handleKeyDown}
         >
             <div className="curl-term-bar">
                 <span
@@ -157,21 +172,27 @@ export default function CurlTerminal() {
                 <button
                     type="button"
                     onClick={run}
-                    disabled={running}
+                    disabled={isRunning}
                     className="curl-term-run"
                 >
-                    {running ? 'running…' : hasRun ? '↻ run again' : '▶ run'}
+                    {isRunning
+                        ? 'running…'
+                        : hasRunBefore
+                          ? '↻ run again'
+                          : '▶ run'}
                 </button>
             </div>
 
             <div className="curl-term-body">
                 <div className="curl-term-prompt">
                     <span style={{ color: 'var(--accent)' }}>$</span>{' '}
-                    <span style={{ color: 'var(--ink)' }}>{typedCmd}</span>
+                    <span style={{ color: 'var(--ink)' }}>
+                        {displayedCommand}
+                    </span>
                     {showCursor && <span className="site-cursor" aria-hidden />}
                 </div>
 
-                <BoxedResponse lines={lines} />
+                <BoxedResponse lines={responseLines} />
             </div>
         </div>
     );
@@ -188,47 +209,54 @@ function BoxedResponse({ lines }: { lines: string[] }) {
         return null;
     }
 
-    // eslint-disable-next-line no-control-regex -- ANSI SGR escape codes
-    const stripCodes = (line: string) => line.replace(/\x1b\[[0-9;]*m/g, '');
+    const stripAnsiCodes = (line: string) =>
+        // eslint-disable-next-line no-control-regex -- ANSI SGR escape codes
+        line.replace(/\x1b\[[0-9;]*m/g, '');
 
-    const isCorner = (line: string) => /[╭╮╰╯]/.test(stripCodes(line));
-    const isBoxResponse = lines.some(isCorner);
+    const isBorderCornerLine = (line: string) =>
+        /[╭╮╰╯]/.test(stripAnsiCodes(line));
 
-    if (!isBoxResponse) {
+    const isBoxedResponse = lines.some(isBorderCornerLine);
+
+    if (!isBoxedResponse) {
         return (
             <>
-                {lines.map((line, idx) => (
-                    <div className="row ansi-line" key={idx}>
-                        {stripCodes(line) === '' ? ' ' : renderAnsi(line)}
+                {lines.map((line, lineIndex) => (
+                    <div className="row ansi-line" key={lineIndex}>
+                        {stripAnsiCodes(line) === '' ? ' ' : renderAnsi(line)}
                     </div>
                 ))}
             </>
         );
     }
 
-    const stripped = lines
-        .filter((line) => !isCorner(line))
+    const innerLines = lines
+        .filter((line) => !isBorderCornerLine(line))
         .map((line) =>
-            // eslint-disable-next-line no-control-regex -- ANSI SGR escape codes
-            line.replace(/[│]/g, '').replace(/[ \t]+(\x1b\[0m)*$/, '$1'),
+            line
+                .replace(/[│]/g, '')
+                // eslint-disable-next-line no-control-regex -- ANSI SGR escape codes
+                .replace(/[ \t]+(\x1b\[0m)*$/, '$1'),
         );
 
-    while (stripped.length && stripCodes(stripped[0]).trim() === '') {
-        stripped.shift();
+    while (innerLines.length && stripAnsiCodes(innerLines[0]).trim() === '') {
+        innerLines.shift();
     }
 
     while (
-        stripped.length &&
-        stripCodes(stripped[stripped.length - 1]).trim() === ''
+        innerLines.length &&
+        stripAnsiCodes(innerLines[innerLines.length - 1]).trim() === ''
     ) {
-        stripped.pop();
+        innerLines.pop();
     }
 
     return (
         <div className="curl-bio-box">
-            {stripped.map((line, idx) => (
-                <div className="row ansi-line" key={idx}>
-                    {stripCodes(line).trim() === '' ? ' ' : renderAnsi(line)}
+            {innerLines.map((line, lineIndex) => (
+                <div className="row ansi-line" key={lineIndex}>
+                    {stripAnsiCodes(line).trim() === ''
+                        ? ' '
+                        : renderAnsi(line)}
                 </div>
             ))}
         </div>
@@ -240,86 +268,89 @@ function BoxedResponse({ lines }: { lines: string[] }) {
  *   0 reset · 1 bold · 2 dim · 32 green · 36 cyan
  */
 function renderAnsi(text: string): ReactNode[] {
-    const ESC = '\x1b';
-    const out: ReactNode[] = [];
-    let buf = '';
-    let bold = false;
-    let dim = false;
-    let color: 'green' | 'cyan' | null = null;
-    let key = 0;
+    const ESCAPE_CHAR = '\x1b';
+    const renderedSpans: ReactNode[] = [];
+    let pendingText = '';
+    let isBold = false;
+    let isDim = false;
+    let activeColor: 'green' | 'cyan' | null = null;
+    let nextSpanKey = 0;
 
-    const flush = () => {
-        if (!buf) {
+    const flushPendingText = () => {
+        if (!pendingText) {
             return;
         }
 
         const classes: string[] = [];
 
-        if (bold) {
+        if (isBold) {
             classes.push('ansi-bold');
         }
 
-        if (dim) {
+        if (isDim) {
             classes.push('ansi-dim');
         }
 
-        if (color) {
-            classes.push(`ansi-${color}`);
+        if (activeColor) {
+            classes.push(`ansi-${activeColor}`);
         }
 
-        out.push(
-            <span key={key++} className={classes.join(' ') || undefined}>
-                {buf}
+        renderedSpans.push(
+            <span
+                key={nextSpanKey++}
+                className={classes.join(' ') || undefined}
+            >
+                {pendingText}
             </span>,
         );
-        buf = '';
+        pendingText = '';
     };
 
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === ESC && text[i + 1] === '[') {
-            const end = text.indexOf('m', i + 2);
+    for (let charIndex = 0; charIndex < text.length; charIndex++) {
+        if (text[charIndex] === ESCAPE_CHAR && text[charIndex + 1] === '[') {
+            const sequenceEndIndex = text.indexOf('m', charIndex + 2);
 
-            if (end === -1) {
-                buf += text[i];
+            if (sequenceEndIndex === -1) {
+                pendingText += text[charIndex];
                 continue;
             }
 
-            flush();
+            flushPendingText();
             const codes = text
-                .slice(i + 2, end)
+                .slice(charIndex + 2, sequenceEndIndex)
                 .split(';')
-                .map((s) => s.trim())
+                .map((code) => code.trim())
                 .filter(Boolean);
-            const apply = codes.length ? codes : ['0'];
+            const codesToApply = codes.length ? codes : ['0'];
 
-            for (const c of apply) {
-                if (c === '0') {
-                    bold = false;
-                    dim = false;
-                    color = null;
-                } else if (c === '1') {
-                    bold = true;
-                } else if (c === '2') {
-                    dim = true;
-                } else if (c === '22') {
-                    bold = false;
-                    dim = false;
-                } else if (c === '32') {
-                    color = 'green';
-                } else if (c === '36') {
-                    color = 'cyan';
-                } else if (c === '39') {
-                    color = null;
+            for (const code of codesToApply) {
+                if (code === '0') {
+                    isBold = false;
+                    isDim = false;
+                    activeColor = null;
+                } else if (code === '1') {
+                    isBold = true;
+                } else if (code === '2') {
+                    isDim = true;
+                } else if (code === '22') {
+                    isBold = false;
+                    isDim = false;
+                } else if (code === '32') {
+                    activeColor = 'green';
+                } else if (code === '36') {
+                    activeColor = 'cyan';
+                } else if (code === '39') {
+                    activeColor = null;
                 }
             }
 
-            i = end;
+            charIndex = sequenceEndIndex;
         } else {
-            buf += text[i];
+            pendingText += text[charIndex];
         }
     }
 
-    flush();
+    flushPendingText();
 
-    return out;
+    return renderedSpans;
 }

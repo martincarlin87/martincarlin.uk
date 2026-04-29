@@ -3,15 +3,34 @@ name: tests
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'LICENSE'
+      - '.github/dependabot.yml'
+      - '.github/CODEOWNERS'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'LICENSE'
+      - '.github/dependabot.yml'
+      - '.github/CODEOWNERS'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  pest:
+  # ────────────────────────── BUILD ──────────────────────────────
+  # Single source-of-truth build. Produces the Vite output and the
+  # Wayfinder-generated JS so downstream jobs (and other workflows
+  # via artifact reuse) don't have to repeat it.
+  build:
+    name: build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: ['8.3', '8.4']
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v6
@@ -19,7 +38,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: '8.4'
           tools: composer:v2
           coverage: none
 
@@ -29,20 +48,77 @@ jobs:
           node-version: '22'
           cache: npm
 
-      - name: Install PHP Dependencies
+      - name: Cache composer vendor
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.4-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.4-
+
+      - name: Install PHP dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Install Node Dependencies
+      - name: Install Node dependencies
         run: npm ci
 
-      - name: Copy Environment File
-        run: cp .env.example .env
-
-      - name: Generate Application Key
-        run: php artisan key:generate
-
-      - name: Build Assets
+      - name: Build assets
         run: npm run build
 
-      - name: Run Tests
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            public/build
+            resources/js/actions
+            resources/js/routes
+            resources/js/wayfinder
+          if-no-files-found: error
+          retention-days: 7
+
+  # ────────────────────────── TESTS ──────────────────────────────
+  pest:
+    name: pest
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Cache composer vendor
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.4-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.4-
+
+      - name: Install PHP dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
+      - name: Copy environment file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Run tests
         run: ./vendor/bin/pest --compact
