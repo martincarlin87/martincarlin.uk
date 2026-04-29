@@ -214,7 +214,9 @@ function BoxedResponse({ lines }: { lines: string[] }) {
         line.replace(/\x1b\[[0-9;]*m/g, '');
 
     const isBorderCornerLine = (line: string) =>
-        /[╭╮╰╯]/.test(stripAnsiCodes(line));
+        // Match both rounded (╭╮╰╯) and square (┌┐└┘) corners — different
+        // sources of the bio use different sets.
+        /[╭╮╰╯┌┐└┘]/.test(stripAnsiCodes(line));
 
     const isBoxedResponse = lines.some(isBorderCornerLine);
 
