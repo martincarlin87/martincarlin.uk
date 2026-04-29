@@ -58,9 +58,15 @@ jobs:
   js:
     name: js (eslint, prettier, tsc)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -68,7 +74,31 @@ jobs:
           node-version: '22'
           cache: npm
 
-      - name: Install Dependencies
+      - name: Cache composer vendor
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-php8.4-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php8.4-
+
+      - name: Install PHP dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Generate Wayfinder routes/actions
+        # eslint-plugin-import resolves @/routes and @/actions/* against the
+        # generated TS files; without these, those imports get classified as
+        # "unknown" and the import/order rule sorts them differently from local.
+        run: php artisan wayfinder:generate
+
+      - name: Install Node dependencies
         run: npm ci
 
       - name: ESLint
