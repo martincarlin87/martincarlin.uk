@@ -63,7 +63,7 @@ const CURRENTLY = [
 export default function Home() {
     return (
         <>
-            <Head title="index" />
+            <Head title="Home" />
 
             {/* HERO ─────────────────────────────────────────────── */}
             <section className="relative px-6 pt-16 pb-24 md:px-10 md:pt-20 lg:px-14 lg:pt-24">

@@ -109,7 +109,7 @@ const CHANNELS: Channel[] = [
 export default function Contact() {
     return (
         <>
-            <Head title="contact" />
+            <Head title="Contact" />
 
             <section className="px-6 pt-16 pb-12 md:px-10 md:pt-20 lg:px-14">
                 <p

@@ -53,7 +53,7 @@ const ELSEWHERE = [
 export default function About() {
     return (
         <>
-            <Head title="about" />
+            <Head title="About" />
 
             <section className="px-6 pt-16 pb-12 md:px-10 md:pt-20 lg:px-14">
                 <p

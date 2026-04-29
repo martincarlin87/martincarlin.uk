@@ -51,7 +51,7 @@ export default function Security({
 
     return (
         <>
-            <Head title="Security settings" />
+            <Head title="Security Settings" />
 
             <h1 className="sr-only">Security settings</h1>
 
