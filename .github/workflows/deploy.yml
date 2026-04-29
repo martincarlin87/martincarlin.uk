@@ -253,6 +253,13 @@ jobs:
           chmod 664 database/database.sqlite
           php artisan migrate --force
           php artisan storage:link --force 2>/dev/null || true
+          # Ensure web server (www-data) can write to runtime dirs. deploy is in
+          # the www-data group so chgrp/chmod work without sudo. Setgid (2xxx)
+          # makes new files created inside inherit www-data group.
+          chgrp -R www-data storage bootstrap/cache database/database.sqlite
+          find storage bootstrap/cache -type d -exec chmod 2775 {} +
+          find storage bootstrap/cache -type f -exec chmod 0664 {} +
+          chmod 0664 database/database.sqlite
           php artisan config:cache
           php artisan route:cache
           php artisan view:cache
