@@ -253,12 +253,16 @@ jobs:
           chmod 664 database/database.sqlite
           php artisan migrate --force
           php artisan storage:link --force 2>/dev/null || true
-          # Ensure web server (www-data) can write to runtime dirs. deploy is in
-          # the www-data group so chgrp/chmod work without sudo. Setgid (2xxx)
-          # makes new files created inside inherit www-data group.
-          chgrp -R www-data storage bootstrap/cache database/database.sqlite
-          find storage bootstrap/cache -type d -exec chmod 2775 {} +
-          find storage bootstrap/cache -type f -exec chmod 0664 {} +
+          # Ensure web server (www-data) can write to runtime dirs. deploy is
+          # in the www-data group so chgrp/chmod work without sudo. Filter to
+          # files owned by deploy — files PHP-FPM created (owned by www-data)
+          # already have the correct group and chgrp on them would fail with
+          # 'Operation not permitted' since deploy can only chgrp what it owns.
+          # Setgid (2xxx) on dirs makes new files inherit www-data group.
+          find storage bootstrap/cache -user deploy -exec chgrp www-data {} +
+          find storage bootstrap/cache -user deploy -type d -exec chmod 2775 {} +
+          find storage bootstrap/cache -user deploy -type f -exec chmod 0664 {} +
+          chgrp www-data database/database.sqlite 2>/dev/null || true
           chmod 0664 database/database.sqlite
           php artisan config:cache
           php artisan route:cache
