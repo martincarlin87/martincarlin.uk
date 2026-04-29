@@ -96,7 +96,9 @@ jobs:
         # eslint-plugin-import resolves @/routes and @/actions/* against the
         # generated TS files; without these, those imports get classified as
         # "unknown" and the import/order rule sorts them differently from local.
-        run: php artisan wayfinder:generate
+        # --with-form matches the Vite plugin's `formVariants: true` so .form()
+        # helpers are present for tsc to type-check.
+        run: php artisan wayfinder:generate --with-form
 
       - name: Install Node dependencies
         run: npm ci
