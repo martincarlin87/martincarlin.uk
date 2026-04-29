@@ -56,7 +56,7 @@ class HomeController extends Controller
         $rows[] = $this->boxLine($this->linkRow('Twitter', 'https://twitter.com/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
         $rows[] = $this->boxLine($this->linkRow('LinkedIn', 'https://linkedin.com/in/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
         $rows[] = $this->boxLine($this->linkRow('Github', 'https://github.com/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
-        $rows[] = $this->boxLine($this->linkRow('SO', 'https://stackoverflow.com/users/634120/', 'martincarlin87', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
+        $rows[] = $this->boxLine($this->linkRow('SO', 'https://stackoverflow.com/u/', '634120', '', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
         $rows[] = $this->boxLine('', $boxWidth, $green, $reset);
         $rows[] = $this->boxLine($this->linkRow('Website', 'https://', 'martincarlin', '.uk', $green, $cyan, $dim, $reset), $boxWidth, $green, $reset);
         $rows[] = $this->boxLine('', $boxWidth, $green, $reset);
