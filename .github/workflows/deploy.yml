@@ -186,11 +186,8 @@ jobs:
       - name: Configure SSH
         env:
           DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
-          DEPLOY_SERVER_RAW: ${{ vars.DEPLOY_SERVER }}
+          DEPLOY_SERVER: ${{ vars.DEPLOY_SERVER }}
         run: |
-          # Strip whitespace defensively — pasted GitHub vars sometimes carry
-          # a trailing space or newline that breaks ssh/rsync hostname parsing.
-          DEPLOY_SERVER=$(printf '%s' "$DEPLOY_SERVER_RAW" | tr -d '[:space:]')
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           echo "$DEPLOY_SSH_PRIVATE_KEY" > ~/.ssh/id_deploy
@@ -200,13 +197,10 @@ jobs:
 
       - name: Rsync release to server
         env:
-          DEPLOY_USER_RAW: ${{ vars.DEPLOY_USER }}
-          DEPLOY_SERVER_RAW: ${{ vars.DEPLOY_SERVER }}
-          DEPLOY_BASE_DIR_RAW: ${{ vars.DEPLOY_BASE_DIR }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_SERVER: ${{ vars.DEPLOY_SERVER }}
+          DEPLOY_BASE_DIR: ${{ vars.DEPLOY_BASE_DIR }}
         run: |
-          DEPLOY_USER=$(printf '%s' "$DEPLOY_USER_RAW" | tr -d '[:space:]')
-          DEPLOY_SERVER=$(printf '%s' "$DEPLOY_SERVER_RAW" | tr -d '[:space:]')
-          DEPLOY_BASE_DIR=$(printf '%s' "$DEPLOY_BASE_DIR_RAW" | tr -d '[:space:]')
           rsync -az --delete \
             --exclude-from=- \
             -e "ssh -i ~/.ssh/id_deploy -o StrictHostKeyChecking=yes" \
@@ -249,13 +243,10 @@ jobs:
 
       - name: Run post-deploy commands on server
         env:
-          DEPLOY_USER_RAW: ${{ vars.DEPLOY_USER }}
-          DEPLOY_SERVER_RAW: ${{ vars.DEPLOY_SERVER }}
-          DEPLOY_BASE_DIR_RAW: ${{ vars.DEPLOY_BASE_DIR }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_SERVER: ${{ vars.DEPLOY_SERVER }}
+          DEPLOY_BASE_DIR: ${{ vars.DEPLOY_BASE_DIR }}
         run: |
-          DEPLOY_USER=$(printf '%s' "$DEPLOY_USER_RAW" | tr -d '[:space:]')
-          DEPLOY_SERVER=$(printf '%s' "$DEPLOY_SERVER_RAW" | tr -d '[:space:]')
-          DEPLOY_BASE_DIR=$(printf '%s' "$DEPLOY_BASE_DIR_RAW" | tr -d '[:space:]')
           ssh -i ~/.ssh/id_deploy "${DEPLOY_USER}@${DEPLOY_SERVER}" "set -e
           cd ${DEPLOY_BASE_DIR}
           touch database/database.sqlite
