@@ -37,7 +37,7 @@ jobs:
 
       - name: Cache composer vendor
         id: composer-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: vendor
           key: composer-${{ runner.os }}-php8.4-${{ hashFiles('**/composer.lock') }}
@@ -49,7 +49,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Cache PHPStan result
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .phpstan-cache
           key: phpstan-${{ runner.os }}-${{ hashFiles('**/composer.lock', 'phpstan.neon') }}-${{ github.sha }}
