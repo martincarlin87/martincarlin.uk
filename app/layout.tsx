@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { JetBrains_Mono, Newsreader } from 'next/font/google';
 import type { PropsWithChildren } from 'react';
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
                     <main className="relative z-10 flex-1">{children}</main>
                     <SiteFooter />
                 </div>
+                <Analytics />
             </body>
         </html>
     );
