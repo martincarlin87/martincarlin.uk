@@ -1,12 +1,21 @@
 'use server';
 
+import { headers } from 'next/headers';
+
 const SMTP2GO_ENDPOINT = 'https://api.smtp2go.com/v3/email/send';
+const TURNSTILE_VERIFY_ENDPOINT =
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 export type ContactFormState = {
     status: 'idle' | 'success' | 'error';
     message?: string;
     errors?: Partial<Record<'name' | 'email' | 'message', string>>;
 };
+
+const SUCCESS_MESSAGE = 'Thanks — your message has been sent.';
+
+const VERIFICATION_MESSAGE =
+    'Sorry, we couldn’t verify you’re human. Please try again.';
 
 const ERROR_MESSAGE =
     'Sorry, something went wrong sending your message. Please email me directly at martin@martincarlin.uk.';
@@ -18,6 +27,11 @@ export async function submitContact(
     const name = String(formData.get('name') ?? '').trim();
     const email = String(formData.get('email') ?? '').trim();
     const message = String(formData.get('message') ?? '').trim();
+
+    // Honeypot filled in: pretend it worked so the bot moves on.
+    if (String(formData.get('website') ?? '') !== '') {
+        return { status: 'success', message: SUCCESS_MESSAGE };
+    }
 
     const errors: ContactFormState['errors'] = {};
 
@@ -46,13 +60,16 @@ export async function submitContact(
         return { status: 'error', errors };
     }
 
+    const turnstileToken = String(formData.get('cf-turnstile-response') ?? '');
+
+    if (!(await verifyTurnstile(turnstileToken))) {
+        return { status: 'error', message: VERIFICATION_MESSAGE };
+    }
+
     try {
         await sendContactMessage(name, email, message);
 
-        return {
-            status: 'success',
-            message: 'Thanks — your message has been sent.',
-        };
+        return { status: 'success', message: SUCCESS_MESSAGE };
     } catch (error) {
         console.error('Contact form send failed', {
             error: error instanceof Error ? error.message : String(error),
@@ -60,6 +77,60 @@ export async function submitContact(
         });
 
         return { status: 'error', message: ERROR_MESSAGE };
+    }
+}
+
+/**
+ * Verify a Cloudflare Turnstile token.
+ *
+ * If no secret key is configured (e.g. local dev), verification is skipped.
+ */
+async function verifyTurnstile(token: string): Promise<boolean> {
+    const secret = process.env.TURNSTILE_SECRET_KEY;
+
+    if (!secret) {
+        return true;
+    }
+
+    if (!token) {
+        return false;
+    }
+
+    const remoteIp = (await headers())
+        .get('x-forwarded-for')
+        ?.split(',')[0]
+        ?.trim();
+
+    try {
+        const response = await fetch(TURNSTILE_VERIFY_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: AbortSignal.timeout(10_000),
+            body: JSON.stringify({
+                secret,
+                response: token,
+                ...(remoteIp && { remoteip: remoteIp }),
+            }),
+        });
+
+        const body = (await response.json()) as {
+            success?: boolean;
+            'error-codes'?: string[];
+        };
+
+        if (!body.success) {
+            console.warn('Turnstile verification failed', {
+                errorCodes: body['error-codes'],
+            });
+        }
+
+        return body.success === true;
+    } catch (error) {
+        console.error('Turnstile verification request failed', {
+            error: error instanceof Error ? error.message : String(error),
+        });
+
+        return false;
     }
 }
 

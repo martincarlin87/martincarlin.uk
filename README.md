@@ -17,11 +17,13 @@ npm run dev
 
 ## Environment
 
-| Variable               | Purpose                                                    |
-| ---------------------- | ---------------------------------------------------------- |
-| `SMTP2GO_API_KEY`      | Contact form email sending (logs-only fallback when unset) |
-| `CONTACT_FROM_ADDRESS` | Sender address (default `noreply@martincarlin.uk`)         |
-| `CONTACT_TO_ADDRESS`   | Recipient address (default `martin@martincarlin.uk`)       |
+| Variable                         | Purpose                                                       |
+| -------------------------------- | ------------------------------------------------------------- |
+| `SMTP2GO_API_KEY`                | Contact form email sending (logs-only fallback when unset)    |
+| `CONTACT_FROM_ADDRESS`           | Sender address (default `noreply@martincarlin.uk`)            |
+| `CONTACT_TO_ADDRESS`             | Recipient address (default `martin@martincarlin.uk`)          |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key (widget hidden when unset)      |
+| `TURNSTILE_SECRET_KEY`           | Cloudflare Turnstile secret (verification skipped when unset) |
 
 ## Deployment
 

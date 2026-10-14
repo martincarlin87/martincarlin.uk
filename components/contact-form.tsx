@@ -3,8 +3,11 @@
 import { useActionState } from 'react';
 import type { ContactFormState } from '@/app/contact/actions';
 import { submitContact } from '@/app/contact/actions';
+import Turnstile from '@/components/turnstile';
 
 const INITIAL_STATE: ContactFormState = { status: 'idle' };
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function ContactForm() {
     const [state, formAction, isPending] = useActionState(
@@ -46,6 +49,31 @@ export default function ContactForm() {
                     </p>
                 )}
             </div>
+
+            {/* Honeypot: hidden from people, irresistible to bots. */}
+            <div
+                aria-hidden
+                style={{
+                    position: 'absolute',
+                    left: '-10000px',
+                    width: 1,
+                    height: 1,
+                    overflow: 'hidden',
+                }}
+            >
+                <label htmlFor="website">website</label>
+                <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                />
+            </div>
+
+            {TURNSTILE_SITE_KEY && (
+                <Turnstile siteKey={TURNSTILE_SITE_KEY} resetSignal={state} />
+            )}
 
             <div className="flex flex-wrap items-center gap-6 pt-3">
                 <button
